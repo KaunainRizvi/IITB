@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chemical Supplies</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Chemical Supplies Table</title>
     <style>
         body {
             font-family: 'Courier New', Courier, monospace;
@@ -12,246 +11,403 @@
             margin: 0;
             padding: 20px;
         }
+
         h1 {
-            font-size: 24px;
+            font-size: 28px;
+            color: #444;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 20px;
         }
+
+        .toolbar button {
+            font-size: 18px;
+            background-color: #ff9800;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .toolbar button:hover {
+            background-color: #e68a00;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #fff;
         }
+
         th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #ddd;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
         }
+
         th {
-            background-color: #f9f9f9;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr.selected {
-            background-color: #d0e7ff;
-        }
-        .icon-bar {
-            margin-bottom: 10px;
-        }
-        .icon-bar i {
-            font-size: 20px;
-            margin-right: 10px;
+            background-color: #3f51b5;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
         }
-        .icon-bar i:hover {
-            color: #007bff;
+
+        th:hover {
+            background-color: #303f9f;
         }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .selected {
+            background-color: #cfe2ff !important;
+            outline: 2px solid #4caf50;
+        }
+
         .checkbox {
+            transform: scale(1.2);
+            opacity: 0.6;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .checkbox:checked {
+            opacity: 1;
+            transform: scale(1.4);
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             text-align: center;
         }
-        .checkbox i {
-            font-size: 18px;
-            color: gray;
-            cursor: pointer;
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #4caf50;
         }
-        .checkbox i.selected {
-            color: #007bff;
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
         }
-        .input-cell {
-            padding: 0;
-        }
-        .input-cell input {
-            width: 100%;
-            border: none;
+
+        .search-container input {
+            width: 400px;
             padding: 10px;
-            box-sizing: border-box;
+            font-size: 16px;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container input:focus {
+            border-color: #3f51b5;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sortIcon {
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .edit-button {
+            font-size: 14px;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .edit-button:hover {
+            background-color: #388e3c;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Chemical Supplies</h1>
+        <div class="toolbar">
+            <button id="addRow">➕ Add Row</button>
+            <button id="moveUp">⬆ Move Up</button>
+            <button id="moveDown">⬇ Move Down</button>
+            <button id="deleteRow">🗑 Delete</button>
+            <button id="refresh">🔄 Refresh</button>
+            <button id="save">💾 Save</button>
+            <button id="editRow">✏️ Edit</button>
+        </div>
 
-<h1>Chemical Supplies</h1>
-<div class="icon-bar">
-    <i class="fas fa-plus" title="Add Row" onclick="addRow()"></i>
-    <i class="fas fa-arrow-up" title="Move Row Up" onclick="moveRowUp()"></i>
-    <i class="fas fa-arrow-down" title="Move Row Down" onclick="moveRowDown()"></i>
-    <i class="fas fa-trash" title="Delete Row" onclick="deleteRow()"></i>
-    <i class="fas fa-sync" title="Refresh Table" onclick="refreshTable()"></i>
-    <input type="text" id="searchBox" placeholder="Search chemicals..." oninput="searchTable()">
-    <input type="file" id="importFile" onchange="importData(event)" />
-</div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by Chemical Name...">
+        </div>
 
-<table id="chemicalTable">
-    <thead>
-        <tr>
-            <th>Select</th>
-            <th onclick="sortTable(0)">Chemical Name</th>
-            <th onclick="sortTable(1)">Vendor</th>
-            <th onclick="sortTable(2)">Density</th>
-            <th onclick="sortTable(3)">Viscosity</th>
-            <th onclick="sortTable(4)">Packaging</th>
-            <th onclick="sortTable(5)">Pack Size</th>
-            <th onclick="sortTable(6)">Unit</th>
-            <th onclick="sortTable(7)">Quantity</th>
-        </tr>
-    </thead>
-    <tbody id="chemicalBody">
-    </tbody>
-</table>
+        <table>
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Select</th>
+                    <th onclick="sortTable(1)">ID <span class="sortIcon">▲</span></th>
+                    <th onclick="sortTable(2)">Chemical Name <span class="sortIcon" id="sortIcon2">▲</span></th>
+                    <th onclick="sortTable(3)">Vendor <span class="sortIcon" id="sortIcon3">▲</span></th>
+                    <th onclick="sortTable(4)">Density <span class="sortIcon" id="sortIcon4">▲</span></th>
+                    <th onclick="sortTable(5)">Viscosity <span class="sortIcon" id="sortIcon5">▲</span></th>
+                    <th onclick="sortTable(6)">Packaging <span class="sortIcon" id="sortIcon6">▲</span></th>
+                    <th onclick="sortTable(7)">Pack Size <span class="sortIcon" id="sortIcon7">▲</span></th>
+                    <th onclick="sortTable(8)">Unit <span class="sortIcon" id="sortIcon8">▲</span></th>
+                    <th onclick="sortTable(9)">Quantity <span class="sortIcon" id="sortIcon9">▲</span></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                
+            </tbody>
+        </table>
+    </div>
 
-<script>
-    let data = [];
-    let selectedRow = null;
-
-    function loadTable() {
-        const tbody = document.getElementById('chemicalBody');
-        tbody.innerHTML = '';
-        data.forEach((item, index) => {
-            let row = `
-            <tr onclick="selectRow(${index})" class="${selectedRow === index ? 'selected' : ''}">
-                <td class="checkbox">
-                    <i class="fas fa-check ${selectedRow === index ? 'selected' : ''}" onclick="event.stopPropagation(); selectRow(${index})"></i>
-                </td>
-                <td class="input-cell"><input type="text" value="${item.name}" oninput="updateField(${index}, 'name', this.value)"></td>
-                <td class="input-cell"><input type="text" value="${item.vendor}" oninput="updateField(${index}, 'vendor', this.value)"></td>
-                <td class="input-cell"><input type="number" value="${item.density}" oninput="updateField(${index}, 'density', this.value)"></td>
-                <td class="input-cell"><input type="number" value="${item.viscosity}" oninput="updateField(${index}, 'viscosity', this.value)"></td>
-                <td class="input-cell"><input type="text" value="${item.packaging}" oninput="updateField(${index}, 'packaging', this.value)"></td>
-                <td class="input-cell"><input type="number" value="${item.packSize}" oninput="updateField(${index}, 'packSize', this.value)"></td>
-                <td class="input-cell"><input type="text" value="${item.unit}" oninput="updateField(${index}, 'unit', this.value)"></td>
-                <td class="input-cell"><input type="number" value="${item.quantity}" oninput="updateField(${index}, 'quantity', this.value)"></td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', row);
-        });
-    }
-
-    function updateField(index, field, value) {
-        if (['density', 'viscosity', 'packSize', 'quantity'].includes(field)) {
-            value = parseFloat(value) || 0;
-            if (isNaN(value) || value < 0) value = 0;
-        }
-        data[index][field] = value;
-    }
-
-    function addRow() {
-        const newId = data.length + 1;
-        data.push({
-            id: newId,
-            name: 'New Chemical',
-            vendor: 'New Vendor',
-            density: 0,
-            viscosity: 0,
-            packaging: 'N/A',
-            packSize: 0,
-            unit: 'N/A',
-            quantity: 0,
-        });
-        loadTable();
-        showAlert('New row added.');
-    }
-
-    function selectRow(index) {
-        selectedRow = index;
-        loadTable();
-    }
-
-    function moveRowUp() {
-        if (selectedRow === null || selectedRow === 0) return;
-        [data[selectedRow - 1], data[selectedRow]] = [data[selectedRow], data[selectedRow - 1]];
-        selectedRow--;
-        loadTable();
-        showAlert('Row moved up.');
-    }
-
-    function moveRowDown() {
-        if (selectedRow === null || selectedRow === data.length - 1) return;
-        [data[selectedRow + 1], data[selectedRow]] = [data[selectedRow], data[selectedRow + 1]];
-        selectedRow++;
-        loadTable();
-        showAlert('Row moved down.');
-    }
-
-    function deleteRow() {
-        if (selectedRow === null) return;
-        data.splice(selectedRow, 1);
-        selectedRow = null;
-        loadTable();
-        showAlert('Row deleted successfully.');
-    }
-
-    function saveData() {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'data.json';
-        link.click();
-        URL.revokeObjectURL(url);
-        showAlert('Data saved successfully!');
-    }
-
-    function refreshTable() {
-        fetch('data.json')
-            .then(response => response.json())
-            .then(jsonData => {
-                data = jsonData;
-                loadTable();
-            })
-            .catch(err => {
-                console.error('Error loading data from JSON file:', err);
-                showAlert('Error loading data. Please check the console for details.');
-            });
-    }
-
-    function sortTable(columnIndex) {
-        const tbody = document.getElementById('chemicalBody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-
-        rows.sort((a, b) => {
-            const aText = a.cells[columnIndex].querySelector('input')?.value.trim() || a.cells[columnIndex].textContent.trim();
-            const bText = b.cells[columnIndex].querySelector('input')?.value.trim() || b.cells[columnIndex].textContent.trim();
-
-            if (!isNaN(aText) && !isNaN(bText)) {
-                return parseFloat(aText) - parseFloat(bText);
+    <script>
+        let chemicalSupplies = [];
+        let selectedRow = null;
+        let currentSortColumn = null;
+        let sortAscending = true;
+    
+        function loadTableDataFromStorage() {
+            const storedData = localStorage.getItem('chemicalSupplies');
+            if (storedData) {
+                chemicalSupplies = JSON.parse(storedData);
+            } else {
+                chemicalSupplies = [
+                    { "id": 1, "name": "Ammonium Persulfate", "vendor": "LG Chem", "density": 3525.92, "viscosity": 60.63, "packaging": "Bag", "packSize": 100, "unit": "kg", "quantity": 6495.18 },
+                    { "id": 2, "name": "Caustic Potash", "vendor": "Formosa", "density": 3172.15, "viscosity": 48.22, "packaging": "Bag", "packSize": 100, "unit": "kg", "quantity": 8751.90 },
+                    { "id": 3, "name": "Dimethylaminopropylamino", "vendor": "LG Chem", "density": 8435.37, "viscosity": 12.62, "packaging": "Barrel", "packSize": 75, "unit": "L", "quantity": 5964.61 },
+                    { "id": 4, "name": "Sodium Hydroxide", "vendor": "Dow Chemicals", "density": 2134.23, "viscosity": 32.45, "packaging": "Bag", "packSize": 50, "unit": "kg", "quantity": 7000.00 },
+                    { "id": 5, "name": "Sulfuric Acid", "vendor": "BASF", "density": 1840.35, "viscosity": 21.76, "packaging": "Barrel", "packSize": 100, "unit": "L", "quantity": 4500.75 },
+                    { "id": 6, "name": "Hydrochloric Acid", "vendor": "INEOS", "density": 1195.55, "viscosity": 36.90, "packaging": "Barrel", "packSize": 150, "unit": "L", "quantity": 8500.30 },
+                    { "id": 7, "name": "Acetic Acid", "vendor": "Eastman", "density": 1049.10, "viscosity": 25.50, "packaging": "Barrel", "packSize": 200, "unit": "L", "quantity": 9200.50 }
+                ];
             }
-            return aText.localeCompare(bText, undefined, { numeric: true });
-        });
-
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
-    function showAlert(message) {
-        alert(message);
-    }
-
-    function importData(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const importedData = e.target.result.split("\n").map(line => {
-                const [id, name, vendor, density, viscosity, packaging, packSize, unit, quantity] = line.split(",");
-                return { id: parseInt(id), name, vendor, density: parseFloat(density), viscosity: parseFloat(viscosity), packaging, packSize: parseInt(packSize), unit, quantity: parseFloat(quantity) };
+            loadTableData();
+        }
+    
+        function loadTableData() {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
+            chemicalSupplies.forEach((row, index) => {
+                const tr = document.createElement("tr");
+                tr.dataset.index = index;
+                tr.innerHTML = `
+                    <td><input type="checkbox" class="checkbox" data-index="${index}" ${selectedRow === index ? "checked" : ""}></td>
+                    <td>${row.id}</td>
+                    <td>${row.name}</td>
+                    <td>${row.vendor}</td>
+                    <td>${row.density}</td>
+                    <td>${row.viscosity}</td>
+                    <td>${row.packaging}</td>
+                    <td>${row.packSize}</td>
+                    <td>${row.unit}</td>
+                    <td>${row.quantity}</td>
+                `;
+                if (selectedRow === index) {
+                    tr.classList.add('selected');
+                }
+                tr.addEventListener('click', handleRowClick);
+                tableBody.appendChild(tr);
             });
-            data = importedData;
-            loadTable();
-            showAlert('Data imported successfully.');
-        };
-        reader.readAsText(file);
-    }
-
-    function searchTable() {
-        const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-        const rows = Array.from(document.querySelectorAll('#chemicalBody tr'));
-
-        rows.forEach(row => {
-            const cells = Array.from(row.cells);
-            const isMatch = cells.some(cell => cell.textContent.toLowerCase().includes(searchTerm));
-            row.style.display = isMatch ? '' : 'none';
+    
+            document.querySelectorAll('.checkbox').forEach((checkbox) => {
+                checkbox.addEventListener('change', handleCheckboxChange);
+            });
+        }
+    
+        function handleRowClick(event) {
+            const tr = event.currentTarget;
+            const rowIndex = parseInt(tr.dataset.index);
+            selectedRow = rowIndex;
+            loadTableData();
+        }
+    
+        function handleCheckboxChange(event) {
+            const checkbox = event.target;
+            const rowIndex = parseInt(checkbox.getAttribute('data-index'));
+    
+            document.querySelectorAll('.checkbox').forEach(cb => cb.checked = false);
+            checkbox.checked = true;
+    
+            selectedRow = rowIndex;
+            loadTableData();
+        }
+    
+        function sortTable(columnIndex) {
+            const keys = ["id", "name", "vendor", "density", "viscosity", "packaging", "packSize", "unit", "quantity"];
+            const sortKey = keys[columnIndex - 1];
+            
+            if (currentSortColumn === columnIndex) {
+                sortAscending = !sortAscending;
+            } else {
+                sortAscending = true;
+            }
+    
+            chemicalSupplies.sort((a, b) => {
+                let aValue = a[sortKey];
+                let bValue = b[sortKey];
+                if (typeof aValue === 'string') {
+                    aValue = aValue.toLowerCase();
+                    bValue = bValue.toLowerCase();
+                }
+                if (aValue < bValue) {
+                    return sortAscending ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortAscending ? 1 : -1;
+                }
+                return 0;
+            });
+    
+            currentSortColumn = columnIndex;
+            loadTableData();
+        }
+    
+        document.getElementById("addRow").addEventListener("click", function() {
+            const newRow = {
+                id: chemicalSupplies.length + 1,
+                name: "Enter Name",
+                vendor: "Enter Vendor",
+                density: 0,
+                viscosity: 0,
+                packaging: "Enter Packaging",
+                packSize: 0,
+                unit: "Enter Unit",
+                quantity: 0
+            };
+            chemicalSupplies.push(newRow);
+            saveData();
+            loadTableData();
         });
-    }
+    
+        document.getElementById("deleteRow").addEventListener("click", function() {
+            if (selectedRow !== null) {
+                chemicalSupplies.splice(selectedRow, 1);
+                selectedRow = null;
+                saveData();
+                loadTableData();
+            } else {
+                alert("Please select a row to delete.");
+            }
+        });
+    
+        document.getElementById("moveUp").addEventListener("click", function() {
+            if (selectedRow !== null && selectedRow > 0) {
+                [chemicalSupplies[selectedRow - 1], chemicalSupplies[selectedRow]] = [chemicalSupplies[selectedRow], chemicalSupplies[selectedRow - 1]];
+                selectedRow--;
+                saveData();
+                loadTableData();
+            } else {
+                alert("No row selected or already at the top.");
+            }
+        });
+    
+        document.getElementById("moveDown").addEventListener("click", function() {
+            if (selectedRow !== null && selectedRow < chemicalSupplies.length - 1) {
+                [chemicalSupplies[selectedRow], chemicalSupplies[selectedRow + 1]] = [chemicalSupplies[selectedRow + 1], chemicalSupplies[selectedRow]];
+                selectedRow++;
+                saveData();
+                loadTableData();
+            } else {
+                alert("No row selected or already at the bottom.");
+            }
+        });
+    
+        document.getElementById("refresh").addEventListener("click", loadTableData);
+    
+        document.getElementById("save").addEventListener("click", function() {
+            saveData();
+            alert("Data saved!");
+        });
+    
+        document.getElementById("editRow").addEventListener("click", function() {
+        if (selectedRow !== null) {
+            const tr = document.querySelector(`tbody tr[data-index="${selectedRow}"]`);
+            const tds = tr.getElementsByTagName('td');
+            
+            
+            if (tr.querySelector('.edit-button')) return;
+            
+            for (let i = 2; i < tds.length; i++) { 
+                const cell = tds[i];
+                const originalValue = cell.innerText;
+                const input = document.createElement('input');
+                
+                input.type = (i === 4 || i === 9) ? 'number' : 'text'; 
+                input.value = originalValue;
+                cell.innerHTML = '';
+                cell.appendChild(input); 
+            }
 
-    window.onload = refreshTable;
-</script>
+            const saveButton = document.createElement('button');
+            saveButton.innerText = 'Save';
+            saveButton.classList.add('edit-button');
+            saveButton.addEventListener('click', function() {
+                const inputs = tr.getElementsByTagName('input');
+                
+                chemicalSupplies[selectedRow].name = inputs[0].value;
+                chemicalSupplies[selectedRow].vendor = inputs[1].value;
+                chemicalSupplies[selectedRow].density = parseFloat(inputs[2].value);
+                chemicalSupplies[selectedRow].viscosity = parseFloat(inputs[3].value);
+                chemicalSupplies[selectedRow].packaging = inputs[4].value;
+                chemicalSupplies[selectedRow].packSize = parseFloat(inputs[5].value);
+                chemicalSupplies[selectedRow].unit = inputs[6].value;
+                chemicalSupplies[selectedRow].quantity = parseFloat(inputs[7].value);
 
+                saveData();
+                loadTableData(); 
+            });
+
+            tr.appendChild(saveButton);
+        } else {
+            alert("Please select a row to edit.");
+        }
+    });
+    
+        document.getElementById("searchInput").addEventListener("keyup", function() {
+            const searchText = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName("td");
+                let match = false;
+                for (let i = 1; i < cells.length; i++) {
+                    if (cells[i].innerText.toLowerCase().includes(searchText)) {
+                        match = true;
+                        break;
+                    }
+                }
+                row.style.display = match ? "" : "none";
+            });
+        });
+    
+        function saveData() {
+            localStorage.setItem('chemicalSupplies', JSON.stringify(chemicalSupplies));
+        }
+    
+        window.onload = loadTableDataFromStorage;
+    </script>
+    
 </body>
 </html>

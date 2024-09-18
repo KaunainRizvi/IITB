@@ -1,0 +1,138 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 28px;
+    color: #444;
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.toolbar button {
+    font-size: 18px;
+    background-color: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toolbar button:hover {
+    background-color: #e68a00;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #3f51b5;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+th:hover {
+    background-color: #303f9f;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.selected {
+    background-color: #cfe2ff !important;
+    outline: 2px solid #4caf50;
+}
+
+.checkbox {
+    transform: scale(1.2);
+    opacity: 0.6;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.checkbox:checked {
+    opacity: 1;
+    transform: scale(1.4);
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+}
+
+input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: #4caf50;
+}
+
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.search-container input {
+    width: 400px;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-container input:focus {
+    border-color: #3f51b5;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.sortIcon {
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.edit-button {
+    font-size: 14px;
+    color: #fff;
+    background-color: #4caf50;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.edit-button:hover {
+    background-color: #388e3c;
+}
